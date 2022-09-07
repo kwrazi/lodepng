@@ -12,23 +12,38 @@ CXX ?= g++
 override CFLAGS := -W -Wall -Wextra -ansi -pedantic -O3 -Wno-unused-function $(CFLAGS)
 override CXXFLAGS := -W -Wall -Wextra -ansi -pedantic -O3 $(CXXFLAGS)
 
+SRC = src/lodepng.o src/lodepng_util.o
+
 all: unittest benchmark pngdetail showpng
 
 %.o: %.cpp
 	@mkdir -p `dirname $@`
 	$(CXX) -I ./ $(CXXFLAGS) -c $< -o $@
 
-unittest: lodepng.o lodepng_util.o lodepng_unittest.o
-	$(CXX) $^ $(CXXFLAGS) -o $@
+unittest: tests/lodepng_unittest.o $(SRC)
+	$(CXX) $^ $(CXXFLAGS) -o tests/$@
 
-benchmark: lodepng.o lodepng_benchmark.o
-	$(CXX) $^ $(CXXFLAGS) -lSDL2 -o $@
+benchmark: apps/lodepng_benchmark.o $(SRC)
+	$(CXX) $^ $(CXXFLAGS) -lSDL2 -o apps/$@
 
-pngdetail: lodepng.o lodepng_util.o pngdetail.o
-	$(CXX) $^ $(CXXFLAGS) -o $@
+pngdetail: apps/pngdetail.o $(SRC)
+	$(CXX) $^ $(CXXFLAGS) -o apps/$@
 
-showpng: lodepng.o examples/example_sdl.o
-	$(CXX) -I ./ $^ $(CXXFLAGS) -lSDL2 -o $@
+showpng: examples/example_sdl.o $(SRC)
+	$(CXX) -Isrc $^ $(CXXFLAGS) -lSDL2 -o examples/$@
+
+examples/%.o: examples/%.cpp
+	$(CXX) -Isrc -c $< $(CXXFLAGS) -o $@
+
+src/%.o: src/%.cpp src/%.h 
+	$(CXX) -Isrc -c $< $(CXXFLAGS) -o $@
+
+apps/%.o: apps/%.cpp
+	$(CXX) -Isrc -c $< $(CXXFLAGS) -o $@
+
+tests/%.o: tests/%.cpp
+	$(CXX) -Isrc -c $< $(CXXFLAGS) -o $@
+
 
 clean:
-	rm -f unittest benchmark pngdetail showpng lodepng_unittest.o lodepng_benchmark.o lodepng.o lodepng_util.o pngdetail.o examples/example_sdl.o
+	rm -fv tests/unittest apps/benchmark apps/pngdetail examples/showpng tests/*.o src/*.o apps/*.o examples/*.o

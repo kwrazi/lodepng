@@ -1,0 +1,5 @@
+*.o
+/apps/benchmark
+/apps/pngdetail
+/examples/showpng
+/tests/unittest
