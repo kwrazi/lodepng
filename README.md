@@ -73,3 +73,7 @@ way to use that one is to include its source files in your program. The Makefile
 only builds development and testing utilities. It can be used as follows:
 
 `make -j`
+
+### PlatformIO
+
+To use this repo directly in PlatformIO, just add the git repo URL under `lib_deps` list in `platformio.ini` file. You can then enable and disable features by adding macros to the `build_flags` list.
